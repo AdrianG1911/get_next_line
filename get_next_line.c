@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-char	*freeptr(char **line, char	**leftover)
+static char	*freeptr(char **line, char	**leftover)
 {
 	if (*line)
 		free(*line);
@@ -23,7 +23,7 @@ char	*freeptr(char **line, char	**leftover)
 	return (NULL);
 }
 
-char	*leftovercheck(char **leftover,char **line)
+static char	*leftovercheck(char **leftover,char **line)
 {
 	char	*temp;
 	char	*end;
@@ -50,7 +50,7 @@ char	*leftovercheck(char **leftover,char **line)
 	return (*line);
 }
 
-char	*getline(int fd, char **leftover)
+static char	*getline(int fd, char **leftover)
 {
 	ssize_t	bytesread;
 	char	*line;
@@ -69,9 +69,11 @@ char	*getline(int fd, char **leftover)
 		if (!(*leftover))
 			return (freeptr(&line, leftover));
 		bytesread = read(fd, *leftover, BUFFER_SIZE);
+		if (bytesread < 0)
+			return (freeptr(&line, leftover));
 		(*leftover)[bytesread] = 0;
 	}
-	if (ft_strlen(line))  // If there's any data left in line after the end of the file is reached
+	if (line[0] != 0) 
 		return (line);
 	else
 		return (freeptr(&line, leftover));
@@ -80,6 +82,7 @@ char	*getline(int fd, char **leftover)
 char	*get_next_line(int fd)
 {
 	static char	*leftover;
+	char 		*line;
 
 	if (BUFFER_SIZE <= 0)
 		return (NULL);
@@ -90,5 +93,9 @@ char	*get_next_line(int fd)
 			return (NULL);
 		leftover[0] = 0;
 	}
-	return (getline(fd, &leftover));
+	line = getline(fd, &leftover);
+	if (line)
+		return (line);
+	else
+		return (freeptr(&line, &leftover));
 }
