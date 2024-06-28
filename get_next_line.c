@@ -12,78 +12,69 @@
 
 #include "get_next_line.h"
 
-char	*freeptr(char	**leftover)
+char	*freeptr(char **line, char	**leftover)
 {
-	free(*leftover);
+	if (*line)
+		free(*line);
+	*line = NULL;
+	if (*leftover)
+		free(*leftover);
 	*leftover = NULL;
 	return (NULL);
 }
 
-char	*leftovercheck(char **leftover)
+char	*leftovercheck(char **leftover,char **line)
 {
 	char	*temp;
-	char	*line;
+	char	*end;
 
 	temp = *leftover;
 	while (*temp != '\n' && *temp != 0)
 		temp++;
-	if (*temp == 0)
-		temp = NULL;
-	if (temp)
+	if (*temp == '\n')
 	{
-		line = ft_substr(*leftover, 0, (temp + 1) - *leftover);
+		end = ft_substr(*leftover, 0, (temp + 1) - *leftover);
+		*line = fl_ft_strjoin(line, end);
 		temp = *leftover;
-		*leftover = ft_substr(*leftover, ft_strlen(line), ft_strlen(*leftover));
+		*leftover = ft_substr(*leftover, ft_strlen(end), ft_strlen(*leftover));
 		free(temp);
 	}
 	else
 	{
-		line = ft_substr(*leftover, 0, ft_strlen(*leftover));
+		end = ft_substr(*leftover, 0, ft_strlen(*leftover));
+		*line = fl_ft_strjoin(line, end);
 		free(*leftover);
 		*leftover = NULL;
 	}
-	return (line);
-}
-
-char	*free_join(char **line, char **end)
-{
-	char	*temp;
-
-	temp = *line;
-	*line = ft_strjoin(*line, *end);
-	free (temp);
-	free (*end);
+	free(end);
 	return (*line);
 }
-// free_join was needed to make make getline less than 26 lines
 
 char	*getline(int fd, char **leftover)
 {
 	ssize_t	bytesread;
-	char	buff[BUFFER_SIZE + 1];
 	char	*line;
-	char	*end;
 
-	line = NULL;
-	while (1)
+	line = (char *)malloc(1);
+	if (!line)
+		return (freeptr(&line, leftover));
+	line[0] = 0;
+	bytesread = 1;
+	while (bytesread > 0)
 	{
-		if (!line)
-			line = leftovercheck(leftover);
-		else
-		{
-			end = leftovercheck(leftover);
-			line = free_join(&line, &end);
-		}		
+		line = leftovercheck(leftover, &line);		
 		if (*leftover)
 			return (line);
-		bytesread = read(fd, buff, BUFFER_SIZE);
-		if (bytesread == 0 && ft_strlen(line))
-			return (line);
-		if (bytesread <= 0)
-			return (freeptr(&line));
-		buff[bytesread] = 0;
-		*leftover = ft_substr(buff, 0, bytesread);
+		*leftover = (char *)malloc(BUFFER_SIZE + 1);
+		if (!(*leftover))
+			return (freeptr(&line, leftover));
+		bytesread = read(fd, *leftover, BUFFER_SIZE);
+		(*leftover)[bytesread] = 0;
 	}
+	if (ft_strlen(line))  // If there's any data left in line after the end of the file is reached
+		return (line);
+	else
+		return (freeptr(&line, leftover));
 }
 
 char	*get_next_line(int fd)
@@ -94,7 +85,7 @@ char	*get_next_line(int fd)
 		return (NULL);
 	if (!leftover)
 	{
-		leftover = (char *)malloc(1);
+		leftover = (char *)malloc(BUFFER_SIZE + 1);
 		if (!leftover)
 			return (NULL);
 		leftover[0] = 0;
