@@ -6,7 +6,7 @@
 /*   By: adrgutie <adrgutie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 16:37:08 by adrgutie          #+#    #+#             */
-/*   Updated: 2024/06/26 20:55:15 by adrgutie         ###   ########.fr       */
+/*   Updated: 2024/07/02 11:29:46 by adrgutie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static char	*freeptr(char **line, char	**leftover)
 	return (NULL);
 }
 
-static char	*leftovercheck(char **leftover,char **line)
+static char	*leftovercheck(char **leftover, char **line)
 {
 	char	*temp;
 	char	*end;
@@ -62,7 +62,7 @@ static char	*getline(int fd, char **leftover)
 	bytesread = 1;
 	while (bytesread > 0)
 	{
-		line = leftovercheck(leftover, &line);		
+		line = leftovercheck(leftover, &line);
 		if (*leftover)
 			return (line);
 		*leftover = (char *)malloc(BUFFER_SIZE + 1);
@@ -73,7 +73,7 @@ static char	*getline(int fd, char **leftover)
 			return (freeptr(&line, leftover));
 		(*leftover)[bytesread] = 0;
 	}
-	if (line[0] != 0) 
+	if (line[0] != 0)
 		return (line);
 	else
 		return (freeptr(&line, leftover));
@@ -82,7 +82,7 @@ static char	*getline(int fd, char **leftover)
 char	*get_next_line(int fd)
 {
 	static char	*leftover;
-	char 		*line;
+	char		*line;
 
 	if (BUFFER_SIZE <= 0)
 		return (NULL);
