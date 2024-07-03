@@ -1,6 +1,7 @@
-test.c
 .DS_Store
-
+gnlTester/
+test.txt
+test.c
 
 # Prerequisites
 *.d
