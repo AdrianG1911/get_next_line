@@ -61,13 +61,15 @@ static char	*leftovercheck(char **leftover,char **line)
 	}
 	return (*line);
 }
-char	*rescheck(char **line, char **leftover)
+
+static char	*rescheck(char **line, char **leftover)
 {
 		if (!(*line))
 			return (freeptr(line, leftover, NULL), NULL);
 		if (*leftover)
 			return (*line);
 }
+
 static char	*getline(int fd, char **leftover)
 {
 	ssize_t	bytesread;
