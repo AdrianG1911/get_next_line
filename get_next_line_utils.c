@@ -22,7 +22,7 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-void	*ft_memcpy(void *dst, const void *src, size_t n)
+static void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
 	size_t				i;
 	unsigned char		*dst_ptr;
@@ -41,7 +41,7 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	return (dst);
 }
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
+static size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 {
 	size_t	srclen;
 
@@ -56,44 +56,43 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 	return (srclen);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*free_ft_substr(char **s, unsigned int start, size_t len)
 {
 	char	*sub;
 	size_t	slen;
 
-	if (!s)
+	if (!(*s))
 		return (NULL);
-	slen = ft_strlen(s);
+	slen = ft_strlen(*s);
 	if (slen < start)
 		len = 0;
 	else if (len > slen)
 		len = slen;
 	sub = (char *)malloc(len + 1);
 	if (!sub)
-		return (NULL);
+		return (freeptr(s, NULL, NULL), NULL);
 	if (start >= slen)
 		start = slen;
 	if (slen - start < len)
 		len = slen - start;
-	ft_strlcpy(sub, s + start, len + 1);
+	ft_strlcpy(sub, (*s) + start, len + 1);
 	return (sub);
 }
 
-char	*fl_ft_strjoin(char **s1, char const *s2)
+char	*free_ft_strjoin(char **s1, char **s2)
 {
 	char	*newstr;
 	size_t	s1len;
 	size_t	s2len;
 
-	if (!(*s1) || !s2)
-		return (NULL);
+	if (!(*s1) || !(*s2))
+		return (freeptr(s1, s2, NULL), NULL);
 	s1len = ft_strlen(*s1);
-	s2len = ft_strlen(s2);
+	s2len = ft_strlen(*s2);
 	newstr = (char *)malloc(s1len + s2len + 1);
 	if (!newstr)
-		return (NULL);
+		return (freeptr(s1, s2, NULL), NULL);
 	ft_strlcpy(newstr, *s1, s1len + 1);
-	ft_strlcpy(newstr + s1len, s2, s2len + 1);
-	free(*s1);
-	return (newstr);
+	ft_strlcpy(newstr + s1len, *s2, s2len + 1);
+	return (freeptr(s1, s2, NULL), newstr);
 }

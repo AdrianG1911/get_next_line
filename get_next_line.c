@@ -12,44 +12,62 @@
 
 #include "get_next_line.h"
 
-static char	*freeptr(char **line, char	**leftover)
+void	freeptr(char **p1, char **p2, char **p3)
 {
-	if (*line)
-		free(*line);
-	*line = NULL;
-	if (*leftover)
-		free(*leftover);
-	*leftover = NULL;
-	return (NULL);
+	if (p1)
+	{
+		if (*p1)
+			free(*p1);
+		*p1 = NULL;
+	}
+	if (p2)
+	{
+		if (*p2)
+			free(*p2);
+		*p2 = NULL;
+	}
+	if (p3)
+	{
+		if (*p3)
+			free(*p3);
+		*p3 = NULL;
+	}
 }
 
 static char	*leftovercheck(char **leftover,char **line)
 {
 	char	*temp;
 	char	*end;
+	size_t	i;
 
-	temp = *leftover;
-	while (*temp != '\n' && *temp != 0)
-		temp++;
-	if (*temp == '\n')
+	i = 0;
+	while ((*leftover)[i] != '\n' && (*leftover)[i] != 0)
+		i++;
+	if ((*leftover)[i] == '\n')
 	{
-		end = ft_substr(*leftover, 0, (temp + 1) - *leftover);
-		*line = fl_ft_strjoin(line, end);
+		end = free_ft_substr(leftover, 0, i + 1);
+		*line = free_ft_strjoin(line, &end);
 		temp = *leftover;
-		*leftover = ft_substr(*leftover, ft_strlen(end), ft_strlen(*leftover));
+		*leftover = free_ft_substr(leftover, i + 1, ft_strlen(*leftover));
+		if (*leftover == NULL || *line == NULL)
+			return (freeptr(&temp, line, NULL), NULL);
 		free(temp);
 	}
 	else
 	{
-		end = ft_substr(*leftover, 0, ft_strlen(*leftover));
-		*line = fl_ft_strjoin(line, end);
-		free(*leftover);
-		*leftover = NULL;
+		end = free_ft_substr(leftover, 0, ft_strlen(*leftover));
+		*line = free_ft_strjoin(line, &end);
+		freeptr(leftover, NULL, NULL);
 	}
-	free(end);
 	return (*line);
 }
-
+char	*rescheck(char **line, char **leftover)
+{
+		if (!(*line))
+			return (freeptr(line, leftover, NULL), NULL);
+		if (*leftover)
+			return (*line);
+}
 static char	*getline(int fd, char **leftover)
 {
 	ssize_t	bytesread;
@@ -57,26 +75,25 @@ static char	*getline(int fd, char **leftover)
 
 	line = (char *)malloc(1);
 	if (!line)
-		return (freeptr(&line, leftover));
+		return (freeptr(&line, leftover, NULL), NULL);
 	line[0] = 0;
 	bytesread = 1;
 	while (bytesread > 0)
 	{
-		line = leftovercheck(leftover, &line);		
-		if (*leftover)
-			return (line);
+		line = leftovercheck(leftover, &line);
+		if (!line || (*leftover))
+			return (rescheck(&line, leftover));
 		*leftover = (char *)malloc(BUFFER_SIZE + 1);
 		if (!(*leftover))
-			return (freeptr(&line, leftover));
+			return (freeptr(&line, leftover, NULL), NULL);
 		bytesread = read(fd, *leftover, BUFFER_SIZE);
 		if (bytesread < 0)
-			return (freeptr(&line, leftover));
+			return (freeptr(&line, leftover, NULL), NULL);
 		(*leftover)[bytesread] = 0;
 	}
-	if (line[0] != 0) 
+	if (line) 
 		return (line);
-	else
-		return (freeptr(&line, leftover));
+	return (freeptr(&line, leftover, NULL), NULL);
 }
 
 char	*get_next_line(int fd)
@@ -95,7 +112,10 @@ char	*get_next_line(int fd)
 	}
 	line = getline(fd, &leftover);
 	if (line)
+	{
+		if (line[0] == 0)
+			return (freeptr(&line, &leftover, NULL), NULL);
 		return (line);
-	else
-		return (freeptr(&line, &leftover));
+	}
+	return (freeptr(&line, &leftover, NULL), NULL);
 }

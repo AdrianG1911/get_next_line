@@ -20,7 +20,8 @@
 # endif
 
 char	*get_next_line(int fd);
-char	*fl_ft_strjoin(char **s1, char const *s2);
-char	*ft_substr(char const *s, unsigned int start, size_t len);
+char	*free_ft_strjoin(char **s1, char **s2);
+char	*free_ft_substr(char **s, unsigned int start, size_t len);
 size_t	ft_strlen(const char *s);
+void	freeptr(char **p1, char **p2, char **p3);
 #endif
