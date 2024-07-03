@@ -68,6 +68,7 @@ static char	*rescheck(char **line, char **leftover)
 			return (freeptr(line, leftover, NULL), NULL);
 		if (*leftover)
 			return (*line);
+		return (freeptr(line, leftover, NULL), NULL);
 }
 
 static char	*getline(int fd, char **leftover)
