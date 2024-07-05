@@ -6,7 +6,7 @@
 /*   By: adrgutie <adrgutie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 16:37:08 by adrgutie          #+#    #+#             */
-/*   Updated: 2024/06/26 20:55:15 by adrgutie         ###   ########.fr       */
+/*   Updated: 2024/07/05 12:50:48 by adrgutie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	freeptr(char **p1, char **p2, char **p3)
 	}
 }
 
-static char	*leftovercheck(char **leftover,char **line)
+static char	*leftovercheck(char **leftover, char **line)
 {
 	char	*temp;
 	char	*end;
@@ -64,11 +64,11 @@ static char	*leftovercheck(char **leftover,char **line)
 
 static char	*rescheck(char **line, char **leftover)
 {
-		if (!(*line))
-			return (freeptr(line, leftover, NULL), NULL);
-		if (*leftover)
-			return (*line);
+	if (!(*line))
 		return (freeptr(line, leftover, NULL), NULL);
+	if (*leftover)
+		return (*line);
+	return (freeptr(line, leftover, NULL), NULL);
 }
 
 static char	*getline(int fd, char **leftover)
@@ -94,7 +94,7 @@ static char	*getline(int fd, char **leftover)
 			return (freeptr(&line, leftover, NULL), NULL);
 		(*leftover)[bytesread] = 0;
 	}
-	if (line) 
+	if (line)
 		return (line);
 	return (freeptr(&line, leftover, NULL), NULL);
 }
@@ -102,7 +102,7 @@ static char	*getline(int fd, char **leftover)
 char	*get_next_line(int fd)
 {
 	static char	*leftover;
-	char 		*line;
+	char		*line;
 
 	if (BUFFER_SIZE <= 0)
 		return (NULL);
